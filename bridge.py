@@ -1,6 +1,6 @@
 from pylsl import StreamInlet, resolve_streams
 from pythonosc.udp_client import SimpleUDPClient
-
+# --- Configuration ---
 OSC_IP = "127.0.0.1"
 OSC_PORT = 8000
 # STREAM_NAME = "UN-2024.04.20"
