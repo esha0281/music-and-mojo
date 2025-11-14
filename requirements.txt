@@ -1,2 +1,2 @@
 pylsl==1.17.6
-pythonosc==1.9.3
+python-osc==1.9.3
