@@ -68,7 +68,7 @@ try:
         min_seen = raw_value - 200
         max_seen = raw_value + 200
 
-        osc_client.send_message(f"/eeg/processed", [float(raw_value), float(min_seen), float(max_seen)])
+        # osc_client.send_message(f"/eeg/processed", [float(raw_value), float(min_seen), float(max_seen)])
         
         # if sample:
         #     # Loop through each of the 17 values in the sample
