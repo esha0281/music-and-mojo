@@ -20,19 +20,16 @@ STREAM_NAME = 'UnicornRecorderLSLStream'
 # utilizing a double-ended array to to convert stream transfer rate, and max/min values for the scale plot trigger 
 # added by Erik Shamsedeen 12/11/2025 testing for DEV Branch, later exported by Ryan to stable Main development 
 
-SAMPLE_RATE = 250 # in Hz, typical Unicorn EEG sample rate
-BUFFER_SIZE = 125 # in samples, size of the buffer, thus the translation of tempo
-temp = 0.0
 
 # data processing variable 
 
-data_buffer = deque(maxlen=BUFFER_SIZE) 
+# data_buffer = deque(maxlen=BUFFER_SIZE) 
 min_seen = float('inf') # start at positive infinity (thus ensuring a minimum is found)
 max_seen = float('-inf') # start at negative infinity (thus ensuring a maximum is found)
 
 # bpm based calculation and tempo formation (UNICORN HYBRID BLACK is 250Hz per EEG channel)
-bpm = (SAMPLE_RATE/BUFFER_SIZE) * 60 # Calculate BPM based on sample rate and buffer size
-print(f"Calculated BPM based on sample rate and buffer size: {bpm} BPM")
+# bpm = (SAMPLE_RATE/BUFFER_SIZE) * 60 # Calculate BPM based on sample rate and buffer size
+# print(f"Calculated BPM based on sample rate and buffer size: {bpm} BPM")
 
 
 
@@ -66,31 +63,13 @@ try:
 
         # Pull a sample from the 17 channels
         sample, timestamp = inlet.pull_sample()
-        raw_value = sample[7] 
-        bpm = (SAMPLE_RATE/BUFFER_SIZE) * 60
-        
-        data_buffer.append(raw_value)
-        if raw_value < min_seen:
-            min_seen = raw_value
-        if raw_value > max_seen:
-            max_seen = raw_value
-        
-        if (len(data_buffer) == BUFFER_SIZE) and (max_seen > min_seen):
-            print(f"Data Buffer: {list(data_buffer)}")
-            print(f"len(data_buffer): {len(data_buffer)}")
-            
-            smoothed_average = np.mean(data_buffer) 
-            print(f"smoothed_average: {smoothed_average}")
+        raw_value = sample[7]
 
-            if smoothed_average > ((0.50 * temp) + temp) and bpm <= 256:
-                BUFFER_SIZE = max(25, BUFFER_SIZE - 2)  # Decrease buffer size to increase responsiveness
-            elif smoothed_average < ((0.50 * temp) - temp) and bpm > 0:
-                BUFFER_SIZE = min(125, BUFFER_SIZE + 2)  # Increase buffer size to smooth out changes
-            print(f"BPM: {bpm}")
-            normalized_value = (smoothed_average - min_seen) / (max_seen - min_seen) 
-            osc_client.send_message(f"/eeg/processed", [float(normalized_value), float(bpm), float(smoothed_average), float(min_seen), float(max_seen), float(raw_value)])
-            temp = smoothed_average
-            data_buffer.clear()
+        min_seen = raw_value - 200
+        max_seen = raw_value + 200
+
+        osc_client.send_message(f"/eeg/processed", [float(raw_value), float(min_seen), float(max_seen)])
+        
         # if sample:
         #     # Loop through each of the 17 values in the sample
         #     for i, val in enumerate(sample):
