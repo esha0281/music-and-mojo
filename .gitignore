@@ -1,0 +1,31 @@
+# --- EEG data: never in git (personal data, large files) ---
+data/
+*.csv
+*.npy
+*.npz
+*.edf
+*.bdf
+*.fif
+*.xdf
+eeg_window_export.png
+
+# --- Python artifacts ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+venv/
+.venv/
+env/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Max / Ableton backups ---
+*.als.bak
+Backup/

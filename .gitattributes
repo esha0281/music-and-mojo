@@ -1,0 +1,4 @@
+# Max for Live devices have a binary header that stores the patch length:
+# line-ending conversion would change the length and break the device.
+*.amxd binary
+*.als  binary

@@ -48,6 +48,7 @@ First-time setup is `python -m venv venv`, then activate, then `pip install -r r
 |---|---|
 | `stream.py` | Replays a recorded EEG CSV (`data/…csv`, 8 channels) as a live LSL stream called `SpoofedEEG` at 250 Hz. It loops at the end of the file and paces by a running clock, so the rate stays at 250 Hz. |
 | `discover_streams.py` | Lists every LSL stream on the network (name, type, channels, rate). Run it first when the bridge says "No stream named …". |
+| `bridge3.py` | `bridge2.py`, altered by Claude. |
 | `bridge2.py` | The main bridge. It reads one channel (`CHANNEL = 7`) from the named LSL stream and sends each sample as `/eeg/processed`. Once a second it also sends `/eeg/range` (the 5th–95th percentile of the last 10 s) for Auto Range. It prints a msgs/s line. |
 | `bridge.py` | Experimental bridge. It computes alpha (8–12 Hz) band power with MNE (Welch, 1 s window, every 10 samples) on one channel of the Unicorn stream, and sends `/eeg/alpha_power`. |
 | `requirements.txt` | Python packages. |
