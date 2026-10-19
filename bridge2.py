@@ -1,9 +1,10 @@
 
 # various imports and library calls
-from pylsl import StreamInlet, resolve_streams
+from pylsl import StreamInlet, resolve_byprop
 from collections import deque
 from pythonosc.udp_client import SimpleUDPClient
 import numpy as np
+import time
 
 
 
@@ -12,7 +13,9 @@ import numpy as np
 OSC_IP = "127.0.0.1"
 OSC_PORT = 8000
 # STREAM_NAME = "UN-2024.04.20"
-STREAM_NAME = 'UnicornRecorderLSLStream'
+# STREAM_NAME = 'UnicornRecorderLSLStream'
+STREAM_NAME = 'SpoofedEEG'
+
 
 # Max Plot for LIVE (Toggle, Scaling Configuration)
 
@@ -37,12 +40,11 @@ max_seen = float('-inf') # start at negative infinity (thus ensuring a maximum i
 print(f"Resolving LSL stream with name '{STREAM_NAME}'...")
 # Use resolve_stream() to find a specific stream by name.
 # It's more direct than getting all streams and filtering.
-streams = resolve_streams(10)
+streams = resolve_byprop('name', STREAM_NAME, timeout=10)
 
 # In case the stream is not found, streams will be an empty list.
 if not streams:
-    print(f"Error: Could not find a stream with name '{STREAM_NAME}'.")
-    print("Please ensure the Unicorn LSL application is running and broadcasting.")
+    print(f"No stream named '{STREAM_NAME}'. Is stream.py running?")
     exit()
 
 # Select the first EEG stream found
@@ -54,22 +56,29 @@ print(f"Connected to LSL stream: {stream_info.name()} ({stream_info.type()})")
 osc_client = SimpleUDPClient(OSC_IP, OSC_PORT)
 print(f"Sending OSC data to {OSC_IP}:{OSC_PORT}")
 
+sent, t0 = 0, time.time()
 # --- Main Loop ---
 try:
     while True:
-
-       
-
-
         # Pull a sample from the 17 channels
         sample, timestamp = inlet.pull_sample()
-        raw_value = sample[7]
+        if sample is None:
+            print("No samples for 2 s: did stream.py finish its CSV?")
+            continue
+        
+        # raw_value = sample[7] # changed from channel 7 with Alex 2026-01-18
 
-        min_seen = raw_value - 200
-        max_seen = raw_value + 200
-
+        # min_seen = raw_value - 200
+        # max_seen = raw_value + 200
+        # osc_client.send_message(f"/eeg/processed", [float(raw_value)])
         # osc_client.send_message(f"/eeg/processed", [float(raw_value), float(min_seen), float(max_seen)])
         
+        # more pythonic
+        osc_client.send_message("/eeg/processed", [float(sample[7])])
+        sent += 1
+        if time.time() - t0 >= 1:
+            print(f"sent {sent} msgs/s to {OSC_IP}:{OSC_PORT}, last {sample[7]:.2f}")
+            sent, t0 = 0, time.time()
         # if sample:
         #     # Loop through each of the 17 values in the sample
         #     for i, val in enumerate(sample):

@@ -27,6 +27,8 @@ SFREQ = 250 # in Hz, typical Unicorn EEG sample rate
 
 BUFFER_SIZE = 250 # in samples, size of the buffer, thus the translation of tempo
 
+# NEED mess with BUFFER SIZE (experimentation)
+
 # data processing variable 
 
 data_buffer = deque(maxlen=BUFFER_SIZE) 
@@ -34,6 +36,8 @@ data_buffer = deque(maxlen=BUFFER_SIZE)
 FREQ_BANDS = {
     "Alpha": [8, 12]
 }
+# NEED: other frequency bands
+# band abstraction for orchestration 
 
 
 # --- LSL Connection ---

@@ -3,7 +3,7 @@ import csv
 import time
 from pylsl import StreamInfo, StreamOutlet
 
-csv_path = './data/UnicornRecorder_04_07_2025_17_43_410.csv'
+csv_path = './data/Alex_Jam_2026-06-27.csv'
 stream_name = 'SpoofedEEG'
 n_channels = 8
 sample_rate = 250
